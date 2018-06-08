@@ -1,0 +1,50 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    <%@ page import = "java.sql.*" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+ <%@include file="common.jsp"%>
+ 
+</head>
+<body>
+<%
+String url = "jdbc:oracle:thin:@localhost:1521/ORCL"; 
+String id = "csuser"; // 사용자계정 
+String pw = "cs1234"; // 사용자계정의 패스워드 // 데이터베이스와 연동하기 위해 DriverManager에 등록한다. 
+Connection con = null;
+PreparedStatement ps =null;
+Statement  stmt   = null;
+ResultSet rs = null;
+String name=(String)application.getAttribute("name");
+String ID = "'"+name+"'";
+String sql1="select id, emitType, sum(quantity*bottle.refund) as 공병환급금, sum(quantity*bottle.point) as 에코포인트 from waste,bottle where emitType in (select bottle from bottle) and waste.emittype=bottle.bottle and id="+ID+"group by id,emittype";
+
+int i=0;
+try
+ {
+    Class.forName("oracle.jdbc.driver.OracleDriver");
+    con = DriverManager.getConnection(url, id, pw);
+    System.out.println("연결확인");
+    
+    ps=con.prepareStatement(sql1);
+    rs = ps.executeQuery();
+
+    %>
+     <%@include file="nav.jsp"%>
+        
+   <div class="container">
+      <br>
+   <br>
+   <br>
+<h2 >배출유형 순위에 따른 총 배출량 조회 </h2>
+      <div class="row">
+          <% 
+    while(rs.next()){
+    	%>
+<%}%>
+      <%  }catch(SQLException e){out.println(e);
+  System.out.println("연결에러");}
+%>
+</body>
+</html>

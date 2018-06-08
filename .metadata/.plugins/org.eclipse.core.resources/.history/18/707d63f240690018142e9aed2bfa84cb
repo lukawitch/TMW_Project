@@ -1,0 +1,81 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    <%@ page import = "java.sql.*" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
+<title>Insert title here</title>
+</head>
+<body>
+<h2>Hello World!</h2>
+<% // null로 초기화 한다. 
+
+
+String url = "jdbc:oracle:thin:@localhost:1521/ORCL"; 
+String id = "csuser"; // 사용자계정 
+String pw = "cs1234"; // 사용자계정의 패스워드 // 데이터베이스와 연동하기 위해 DriverManager에 등록한다. 
+Connection con = null;
+PreparedStatement ps =null;
+Statement  stmt   = null;
+ResultSet rs = null;
+String sql1="select id,sum(quantity*bottle.point) as point from waste,bottle where emittype in (select bottle from bottle) and waste.emittype=bottle.bottle group by id order by sum(quantity*bottle.point) desc";
+String sql2="select emitType, sum(quantity) as point from waste where id = 'qwe123' group by emitType order by sum(quantity) desc";
+String sql3="select id, sum(quantity*bottle.point) as 총포인트 from waste,bottle where emittype in (select bottle from bottle) and waste.emittype=bottle.bottle group by id order by sum(quantity*bottle.point) desc";
+try
+ {
+    Class.forName("oracle.jdbc.driver.OracleDriver");
+    con = DriverManager.getConnection(url, id, pw);
+    System.out.println("연결확인");
+    
+    ps=con.prepareStatement(sql1);
+    rs = ps.executeQuery();
+   
+    /*while(rs.next()){
+    	String REGISTEDNUM = rs.getString(1);
+    	String ID = rs.getString(2);
+    	String EMITDATE = rs.getString(3);
+    	String EMITTYPE = rs.getString(4);
+    	String QUANTITY = rs.getString(5);
+    	String REPLACEMENT = rs.getString(6);
+        out.println(REGISTEDNUM+"\t"+ID+"\t"+EMITDATE+"\t"+EMITTYPE+"\t"+QUANTITY+"\t"+REPLACEMENT);
+        System.out.println(REGISTEDNUM+"\t"+ID+"\t"+EMITDATE+"\t"+EMITTYPE+"\t"+QUANTITY+"\t"+REPLACEMENT);
+    }*/
+    while(rs.next()){
+    	String ID = rs.getString(1);
+    	String point = rs.getString(2);
+    	out.println(ID+"\t"+point+"\t");
+    }
+    ps=con.prepareStatement(sql2);
+    rs = ps.executeQuery();%>
+    <table>
+    <% 
+while(rs.next()){%>
+    	<tr>
+    	<td><%= rs.getString(1)%></td>
+    	<td><%= rs.getString(2)%></td>
+    	</tr>
+    	<!-- System.out.println(EMITTYPE+"\t"+point+"\t"); -->
+<%     }%>
+  </table>
+  <%
+  ps=con.prepareStatement(sql3);
+  rs = ps.executeQuery();
+  %>
+    <table>
+    <% 
+while(rs.next()){%>
+    	<tr>
+    	<td><%= rs.getString(1)%></td>
+    	<td><%= rs.getString(2)%></td>
+    	</tr>
+    	<!-- System.out.println(EMITTYPE+"\t"+point+"\t"); -->
+<%     }%>
+  </table>
+<%  }catch(SQLException e){out.println(e);
+  System.out.println("연결에러");}
+%>
+
+
+</body>
+</html>

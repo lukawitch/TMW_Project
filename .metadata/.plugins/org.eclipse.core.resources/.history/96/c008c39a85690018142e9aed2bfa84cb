@@ -1,0 +1,62 @@
+
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.List"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+ <%@ page import = "java.sql.*" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<%
+List<String>ID=new ArrayList<String>();
+List<String>PW=new ArrayList<String>();
+
+String url = "jdbc:oracle:thin:@localhost:1521/ORCL"; 
+String id = "csuser"; // 사용자계정 
+String pw = "cs1234"; // 사용자계정의 패스워드 // 데이터베이스와 연동하기 위해 DriverManager에 등록한다. 
+Connection con = null;
+PreparedStatement ps =null;
+Statement  stmt   = null;
+ResultSet rs = null;
+String name=request.getParameter("ID");
+String Password = request.getParameter("pass");
+String sql1="select * from MEMBER";
+try
+{
+   Class.forName("oracle.jdbc.driver.OracleDriver");
+   con = DriverManager.getConnection(url, id, pw);
+   //System.out.println("연결확인");
+   
+   ps=con.prepareStatement(sql1);
+   rs = ps.executeQuery();
+ 
+   while(rs.next()){
+	   ID.add(rs.getString(1));
+	   PW.add(rs.getString(2));
+   }
+   String a;
+   String b;
+	int c;
+   for(int i=0;i<ID.size();i++){
+	   a=ID.get(i);
+	   b=PW.get(i);
+
+		if(a.equals(name)&&b.equals(Password)){
+			c=1;
+			
+		}
+   }
+   if(c==1)
+	   response.sendRedirect("loginsuccess.jsp");
+   else
+	   response.sendRedirect("login.jsp");
+   
+}catch(SQLException e){out.println(e);
+System.out.println("연결에러");}
+%>
+</body>
+</html>
